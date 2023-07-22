@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Remédios Vó</title>
+    <link rel="stylesheet" href="tablestyles.css" />
+  </head>
+  <body>
+    <h1>Remédios da Vó Gerda</h1>
+
+    <p id="current_date"></p>
+
+    <table>
+      <tr>
+        <th>Nome do Remédio</th>
+        <th>Quantidade (comprimidos)</th>
+        <th>Uso</th>
+      </tr>
+      <tr>
+        <td>Euthyrox 50mcg</td>
+        <td id="numero1"></td>
+        <td>Contínuo</td>
+      </tr>
+      <tr>
+        <td>Pantoprazol 40mg</td>
+        <td id="numero2"></td>
+        <td>Contínuo</td>
+      </tr>
+      <tr>
+        <td>Diovan HCT</td>
+        <td id="numero3"></td>
+        <td>Contínuo</td>
+      </tr>
+      <tr>
+        <td>Sertralina 50mg</td>
+        <td id="numero4"></td>
+        <td>Contínuo</td>
+      </tr>
+      <tr>
+        <td>Neovite</td>
+        <td id="numero5"></td>
+        <td>Contínuo</td>
+      </tr>
+      <tr>
+        <td>Domperidona 10mg</td>
+        <td id="numero6"></td>
+        <td>Contínuo</td>
+      </tr>
+      <tr>
+        <td>Labirin 24mg</td>
+        <td id="numero7"></td>
+        <td>Contínuo</td>
+      </tr>
+    </table>
+    <script>
+      //Pegar a data
+      document.getElementById("current_date").innerHTML = Date();
+
+      // Função para atualizar os valores da tabela com os números recebidos do servidor
+      const atualizarTabela = (data) => {
+        document.getElementById("numero1").innerText = data.numero1;
+        document.getElementById("numero2").innerText = data.numero2;
+        document.getElementById("numero3").innerText = data.numero3;
+        document.getElementById("numero4").innerText = data.numero4;
+        document.getElementById("numero5").innerText = data.numero5;
+        document.getElementById("numero6").innerText = data.numero6;
+        document.getElementById("numero7").innerText = data.numero7;
+
+        // Aplicar a formatação para os números abaixo de 7 em vermelho
+        const numeros = [
+          "numero1",
+          "numero2",
+          "numero3",
+          "numero4",
+          "numero5",
+          "numero6",
+          "numero7",
+        ];
+        numeros.forEach((numeroId) => {
+          const numeroElement = document.getElementById(numeroId);
+          const numero = parseInt(numeroElement.innerText, 10);
+          if (numero < 7) {
+            numeroElement.style.color = "red";
+          } else {
+            numeroElement.style.color = "white"; // Reseta a cor para preto se o número for maior ou igual a 7
+          }
+        });
+      };
+
+      // Função para fazer a requisição ao servidor e obter os números
+      const obterNumeros = async () => {
+        try {
+          const response = await fetch("http://localhost:3000/numeros");
+          const data = await response.json();
+          atualizarTabela(data);
+        } catch (error) {
+          console.error("Erro ao obter os números:", error);
+        }
+      };
+
+      // Função para atualizar os números no servidor
+      const atualizarNumeros = async () => {
+        try {
+          const response = await fetch(
+            "http://localhost:3000/atualizar-numeros"
+          );
+          const data = await response.text();
+          console.log(data); // opcional: exibir mensagem do servidor no console
+          obterNumeros(); // Após atualizar, obter os números novamente para exibir na tabela
+        } catch (error) {
+          console.error("Erro ao atualizar os números:", error);
+        }
+      };
+
+      // Chame a função para obter os números quando a página carregar
+      obterNumeros();
+
+      // Defina um intervalo para atualizar os números a cada 10 segundos (10000 ms)
+      setInterval(atualizarNumeros, 1000);
+    </script>
+  </body>
+</html>
